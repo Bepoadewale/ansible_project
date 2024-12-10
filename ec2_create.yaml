@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+  - name: Create EC2 instances
+    amazon.aws.ec2_instance:
+      name: "{{ item.name }}"
+      key_name: "windows-demo"
+      instance_type: t2.micro
+      security_group: default
+      region: us-east-1
+      aws_access_key: "{{aws_access_key_ID}}"  # From vault as defined
+      aws_secret_key: "{{aws_secret_access_key}}"  # From vault as defined      
+      network:
+        assign_public_ip: true
+      image_id: "{{ item.image }}"
+      tags:
+        environment: "{{ item.name }}"
+    loop:
+      - { image: "ami-0453ec754f44f9a4a", name: "server-1" } # Update AMI ID according 
+      - { image: "ami-0e2c8caa4b6378d8c", name: "server-2" } # to your account
+      - { image: "ami-0e2c8caa4b6378d8c", name: "server-3" }
